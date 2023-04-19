@@ -36,6 +36,18 @@ class MyAppState extends ChangeNotifier {
     // On informe tous les listeners qui écoute notre state
     notifyListeners();
   }
+
+  var favorites = <WordPair>[];
+
+  void toggleFavorites() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
+
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatelessWidget {
@@ -44,20 +56,43 @@ class MyHomePage extends StatelessWidget {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
 
+    IconData icon;
+
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
+
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('A random idea:'),
             BigCard(pair: pair),
-            ElevatedButton(
-              onPressed: () {
-                print('buttons pressed!');
-                appState.getNext();
-              },
-              child: Text('Next'),
+            SizedBox(height: 10),
+            Row(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min, // juste ce ki est néce
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorites();
+                    print(appState.favorites);
+                  },
+                  icon: Icon(icon),
+                  label: Text('Love'),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    print('buttons pressed!');
+                    appState.getNext();
+                  },
+                  child: Text('Next'),
+                ),
+              ],
             ),
           ],
         ),
